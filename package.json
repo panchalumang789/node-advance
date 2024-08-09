@@ -1,0 +1,28 @@
+{
+  "name": "advance",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "start": "nodemon dist/index.js",
+    "dev": "nodemon ./src/index.ts",
+    "remove": "docker rm node-advance && docker rmi node:latest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.1.0",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "fastify": "^4.28.1",
+    "fastify-plugin": "^4.5.1",
+    "knex": "^3.1.0",
+    "nodemon": "^3.1.4",
+    "pg": "^8.12.0",
+    "ts-node": "^10.9.2"
+  }
+}
