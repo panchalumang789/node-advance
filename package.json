@@ -8,6 +8,7 @@
     "build": "rm -rf dist && tsc -p tsconfig.json",
     "start": "nodemon dist/index.js",
     "dev": "nodemon ./src/index.ts",
+    "migration": "knex migrate:latest --migrations-directory migrations",
     "remove": "docker rm node-advance && docker rmi node:latest"
   },
   "keywords": [],
@@ -18,6 +19,7 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
+    "dotenv": "^16.4.5",
     "fastify": "^4.28.1",
     "fastify-plugin": "^4.5.1",
     "knex": "^3.1.0",
