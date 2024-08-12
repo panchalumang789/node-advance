@@ -5,7 +5,7 @@ services:
     image: node_advance
     container_name: node_advance
     ports:
-      - "13000:3000"
+      - "3000:3000"
     env_file:
       - .env
     build:
@@ -15,16 +15,18 @@ services:
         condition: service_started
 
   postgres_db:
-    container_name: postgres
-    hostname: postgres
-    image: postgres:latest
-    restart: unless-stopped
+    container_name: postgres_db
+    hostname: postgres_db
+    image: postgres
+    restart: always
     ports:
       - "5432:5432"
-    env_file:
-      - .env
-#     volumes:
-#       - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "root"
+      POSTGRES_DB: "mydb"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
-# volumes:
-#   pgdata:
+volumes:
+  pgdata:

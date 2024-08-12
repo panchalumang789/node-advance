@@ -1,16 +1,10 @@
 import Fastify from "fastify";
-
-import db from "../db/db";
+import knex from "knex";
+import config from "../knexfile";
 
 const fastify = Fastify({ logger: true });
 
-fastify.register(db);
-// fastify.register(knex, (err) => {
-//   if (err) {
-//     fastify.log.error(err);
-//     // process.exit(1);
-//   }
-// });
+const db = knex(config)
 
 fastify.register(require("./routes/user"), {
   logLevel: "info",
@@ -24,24 +18,29 @@ fastify.get("/", (req, res) => {
   res.status(200).send({ hello: "world" });
 });
 
-// fastify.post("/createUser", (req, res) => {
-//   knex("users")
-//     .insert({
-//       first_name: "Umang",
-//       last_name: "Panchal",
-//     })
-//     .then(() => {
-//       knex
-//         .select("*")
-//         .from("users")
-//         .then((users) => {
-//           res.send(users);
-//         });
-//     });
-// });
+fastify.post("/createUser", (req, res) => {
+  db("users")
+    .insert({
+      first_name: "Umang",
+      last_name: "Panchal",
+    })
+    .then(() => {
+      db
+        .select("*")
+        .from("users")
+        .then((users) => {
+          res.send(users);
+        });
+    });
+});
 
 fastify.get("/users", (request, reply) => {
   reply.send({ hello: "asdasdas" });
+});
+
+fastify.setErrorHandler((error, request, reply) => {
+  const { code, message } = error;
+  reply.code(+code || 500).send({ message: message });
 });
 
 // Run the server!

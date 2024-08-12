@@ -9,12 +9,17 @@
     "start": "nodemon dist/index.js",
     "dev": "nodemon ./src/index.ts",
     "migration": "knex migrate:latest --migrations-directory migrations",
-    "remove": "docker rm node-advance && docker rmi node:latest"
+    "db:migrate": "npx knex migrate:latest",
+    "db:seed": "npx knex seed:run",
+    "remove": "docker rm node-advance && docker rmi node:latest",
+    "knex:migrate": "npx knex migrate:make create_users_table",
+    "knex:seed": "npx knex seed:make initial_users"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/knex": "^0.16.1",
     "@types/node": "^22.1.0",
     "typescript": "^5.5.4"
   },
