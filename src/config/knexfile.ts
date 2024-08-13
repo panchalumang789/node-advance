@@ -1,9 +1,12 @@
 import { Knex } from 'knex';
 
+console.log('knexfile_3-__dirname==>', __dirname)
 const config: Knex.Config = {
     client: 'pg',
     connection: {
-        host: 'postgres_db',
+        host: 'localhost',
+        // host: 'postgres_db',
+        // port: 5432,
         user: 'root',
         password: 'root',
         database: 'mydb'
@@ -13,10 +16,10 @@ const config: Knex.Config = {
         max: 10
     },
     migrations: {
-        directory: './migrations'
+        directory: __dirname + '/migrations'
     },
     seeds: {
-        directory: './seeds'
+        directory: __dirname + '/seeds'
     }
 };
 
