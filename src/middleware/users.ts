@@ -1,15 +1,22 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import { z } from "zod";
+import { FastifyError, FastifyReply } from "fastify";
 
-const usersMiddleware = (request: FastifyRequest, reply: FastifyReply, next: any) => {
-    console.log('users_2-request.body====================>', request.body)
-    next({ code: 404, message: "Not found!" });
+import { ValidationDataRequest, userSchema } from "../utils/user";
+
+const validateData = (request: ValidationDataRequest, reply: FastifyReply, next: (err?: FastifyError) => void) => {
+    if (!request.body) next({ code: "404", name: "Error", message: "User details required" });
+
+    try {
+        const data = userSchema.parse(request.body);
+        request.validatedData = data;
+        next()
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            const zodError: Record<string, string> = {}
+            error.issues.forEach(err => zodError[err.path[0]] = err.message)
+            next({ code: "404", name: "Error", message: JSON.stringify(zodError) });
+        }
+    }
 }
 
-const usersMiddleware2 = (request: FastifyRequest, reply: FastifyReply, next: any) => {
-    console.log('users_8-request.body====================>', request.body)
-    next();
-
-}
-
-
-export { usersMiddleware, usersMiddleware2 }
+export { validateData }

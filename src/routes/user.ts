@@ -1,41 +1,20 @@
 import { FastifyPluginAsync } from "fastify";
 
-import db from "../config/db";
-import { usersMiddleware, usersMiddleware2 } from "../middleware/users";
+import { validateData } from "../middleware/users";
+import { UserController } from "../controllers/users";
 
 const userRoutes: FastifyPluginAsync = async (fastify) => {
-    fastify.post('/helloTest', {
-        preHandler: [usersMiddleware],
-        handler: async (_, reply) => {
-            reply.send({ message: 'zxc' })
-        }
-    })
+    const userController = new UserController();
 
-    fastify.post('/helloTest1', {
-        preHandler: [usersMiddleware2],
-        handler: async (_, reply) => {
-            reply.send({ message: 'zxc' })
-        }
-    })
+    fastify.get('/users', { handler: userController.getAllUsers })
 
-    fastify.get('/helloTest1', {
-        handler: async (request, reply) => {
-            request.log.info({ user: { name: "Umang", surname: "Panchal" } })
-            reply.send({ message: 'zxc' })
-        }
-    })
+    fastify.get("/user/:id", { handler: userController.getUserById });
 
-    fastify.post("/createUser", {
-        handler: async (_, res) => {
-            try {
-                await db("users").insert({ first_name: "Umang", last_name: "Panchal", })
-                const user = await db.select("*").from("users")
-                res.code(200).send({ users: user })
-            } catch (error) {
-                if (error instanceof Error) { res.code(500).send({ message: error.message }) }
-            }
-        }
-    });
+    fastify.post("/user", { preHandler: [validateData], handler: userController.createUser });
+
+    fastify.put("/user/:id", { preHandler: [validateData], handler: userController.updateUser });
+
+    fastify.delete("/user/:id", { handler: userController.deleteUser });
 }
 
 export { userRoutes };

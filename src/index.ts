@@ -25,7 +25,7 @@ fastify.get("/", (req, res) => {
 // Error Handler
 fastify.setErrorHandler((error, _, reply) => {
   const { code, message } = error;
-  reply.code(+code || 500).send({ message: message });
+  reply.code(+code || 500).send({ message });
 });
 
 // Run the server!

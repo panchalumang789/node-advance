@@ -1,6 +1,5 @@
 import { Knex } from 'knex';
 
-console.log('knexfile_3-__dirname==>', __dirname)
 const config: Knex.Config = {
     client: 'pg',
     connection: {
