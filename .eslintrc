@@ -1,0 +1,46 @@
+{
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+    "prettier",
+    "plugin:import/typescript"
+  ],
+  "plugins": ["@typescript-eslint", "prettier", "promise", "import"],
+  "env": {
+    "jest": true,
+    "node": true,
+    "es6": true
+  },
+  "rules": {
+    "prettier/prettier": ["error", { "singleQuote": true }],
+    "camelcase": ["error", { "properties": "always" }],
+    "no-unreachable": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "args": "after-used",
+        "argsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/explicit-member-accessibility": "error",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/consistent-type-definitions": ["error", "type"]
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["./tsconfig.json", "./packages/*/tsconfig.json"],
+    "sourceType": "module",
+    "extensions": ".js,.jsx,.ts,.tsx"
+  },
+  "ignorePatterns": [
+    "**/node_modules",
+    "**/dist",
+    "**/bin",
+    "**/*.d.ts",
+    "commitlint.config.js",
+    "lint-staged.config.js",
+    "/packages/core/src/prisma/schema/*"
+  ]
+}

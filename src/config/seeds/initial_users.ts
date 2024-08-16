@@ -7,19 +7,19 @@ export async function seed(knex: Knex): Promise<void> {
     // Inserts seed entries
     await knex("users").insert([
         {
-            id: 1,
-            first_name: "rowValue1",
-            last_name: "rowValue1"
+            id: "1",
+            first_name: "Umang",
+            last_name: "Panchal"
         },
         {
-            id: 2,
-            first_name: "rowValue2",
-            last_name: "rowValue2"
+            id: "2",
+            first_name: "Umang 1",
+            last_name: "Panchal"
         },
         {
-            id: 3,
-            first_name: "rowValue3",
-            last_name: "rowValue3"
+            id: "3",
+            first_name: "Umang 2",
+            last_name: "Panchal"
         }
     ]);
 };

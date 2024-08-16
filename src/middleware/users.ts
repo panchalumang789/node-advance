@@ -1,13 +1,13 @@
 import { z } from "zod";
-import { FastifyError, FastifyReply } from "fastify";
+import { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 
-import { ValidationDataRequest, userSchema } from "../utils/user";
+import { createUserSchema } from "../utils/user";
 
-const validateData = (request: ValidationDataRequest, reply: FastifyReply, next: (err?: FastifyError) => void) => {
+const validateData = (request: FastifyRequest, reply: FastifyReply, next: (err?: FastifyError) => void) => {
     if (!request.body) next({ code: "404", name: "Error", message: "User details required" });
 
     try {
-        const data = userSchema.parse(request.body);
+        const data = createUserSchema.parse(request.body);
         request.validatedData = data;
         next()
     } catch (error) {

@@ -5,6 +5,10 @@ const emitter = new EventEmitter()
 const fastify = Fastify({ logger: true });
 
 import * as routes from './routes';
+import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
+
+fastify.setValidatorCompiler(validatorCompiler);
+fastify.setSerializerCompiler(serializerCompiler);
 
 function registerRoute() {
   fastify.log.info("Registering routes...");
@@ -19,7 +23,7 @@ registerRoute()
 
 // Declare a route
 fastify.get("/", (req, res) => {
-  res.status(200).send({ hello: "world" });
+  res.status(200).send({ message: "Hello World" });
 });
 
 // Error Handler

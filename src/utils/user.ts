@@ -1,13 +1,16 @@
 import { z } from "zod";
-import { FastifyRequest } from "fastify";
 
-export const userSchema = z.object({
+export const getAllUsersSchema = z.object({
+    id: z.string().min(1, 'First name is required'),
+    first_name: z.string().min(1, 'First name is required'),
+    last_name: z.string().min(1, 'First name is required'),
+    created_at: z.coerce.date(),
+    updated_at: z.coerce.date(),
+})
+
+export const createUserSchema = z.object({
     first_name: z.string().min(1, 'First name is required'),
     last_name: z.string().min(1, 'Last name is required'),
 });
 
-export type UserData = z.infer<typeof userSchema>;
-
-export interface ValidationDataRequest extends FastifyRequest {
-    validatedData?: UserData;
-}
+export type GetAllUserData = z.infer<typeof createUserSchema>;

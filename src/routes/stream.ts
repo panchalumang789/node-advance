@@ -1,6 +1,8 @@
-import { FastifyPluginAsync } from "fastify";
+import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 
 import { readFileStream } from "../streams/readFile";
+import { createInterface } from "readline";
+import { duplexStream } from "../streams/writeFile";
 
 const streamRoutes: FastifyPluginAsync = async (fastify) => {
     fastify.get("/readfile-stream", (_, res) => {
@@ -20,6 +22,20 @@ const streamRoutes: FastifyPluginAsync = async (fastify) => {
                 res.code(500).send({ message: 'Internal server error.' })
             }
         }
+    });
+
+    fastify.post('/', (request: FastifyRequest, reply: FastifyReply) => {
+        const rl = createInterface({
+            input: duplexStream,
+            output: process.stdout,
+            prompt: 'fastify'
+        });
+        // request.body.pipe(writableStream);
+        rl.prompt();
+        duplexStream.pipe(process.stdout, { end: false });
+        duplexStream.on('data', (chunk) => {
+            reply.send(chunk.toString());
+        });
     });
 }
 
