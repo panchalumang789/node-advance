@@ -1,47 +1,36 @@
-import Fastify from "fastify";
 import EventEmitter from "events";
 
+import { createApp } from "./app";
+
 const emitter = new EventEmitter()
-const fastify = Fastify({ logger: true });
 
-import * as routes from './routes';
-import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
+const start = async (port: number) => {
+  const app = await createApp({
+    logger: {
+      transport: {
+        target: 'pino-pretty',
+        options: {
+          translateTime: 'HH:MM:ss Z',
+          ignore: 'pid,hostname',
+        },
+      },
+    },
+  });
 
-fastify.setValidatorCompiler(validatorCompiler);
-fastify.setSerializerCompiler(serializerCompiler);
-
-function registerRoute() {
-  fastify.log.info("Registering routes...");
-  for (const routeModule of Object.values(routes)) {
-    if (Object.keys(routeModule).length > 0) {
-      const routes = Object.values(routeModule)[0]
-      fastify.register(routes)
-    }
+  const serverStarted = (message: string, type: string) => {
+    if (type === 'log') app.log.info(message)
+    else app.log.error(message)
   }
-}
-registerRoute()
+  emitter.on('serverStarted', serverStarted)
 
-// Declare a route
-fastify.get("/", (req, res) => {
-  res.status(200).send({ message: "Hello World" });
-});
+  app.listen({ port: 3000 }, (err, address) => {
+    if (err) {
+      emitter.emit('serverStarted', err.message)
+      process.exit(1);
+    } else {
+      emitter.emit('serverStarted', 'server listening on ' + address, 'log')
+    }
+  });
+};
 
-// Error Handler
-fastify.setErrorHandler((error, _, reply) => {
-  const { code, message } = error;
-  reply.code(+code || 500).send({ message });
-});
-
-// Run the server!
-const serverStarted = (message: string, type: string) => {
-  if (type === 'log') fastify.log.info(message)
-  else fastify.log.error(message)
-}
-emitter.on('serverStarted', serverStarted)
-
-fastify.listen({ port: 3000, host: "0.0.0.0" }, (err, address) => {
-  if (err) {
-    emitter.emit('serverStarted', err.message)
-    process.exit(1);
-  } else { emitter.emit('serverStarted', 'server listening on ' + address, 'log') }
-});
+start(3000)

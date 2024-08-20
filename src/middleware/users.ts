@@ -1,3 +1,5 @@
+/// <reference path="../plugins/extenstion.d.ts" />
+
 import { z } from "zod";
 import { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 
