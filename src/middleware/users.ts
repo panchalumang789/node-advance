@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 
-import { createUserSchema } from "../utils/user";
+import { createUserSchema } from "../schema/user";
 
 const validateData = (request: FastifyRequest, reply: FastifyReply, next: (err?: FastifyError) => void) => {
     if (!request.body) next({ code: "404", name: "Error", message: "User details required" });

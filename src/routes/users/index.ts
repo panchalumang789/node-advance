@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { FastifyPluginAsync } from "fastify";
 
-import { getAllUsersSchema } from "../../utils/user";
+import { getAllUsersSchema } from "../../schema/user";
 import { UserController } from "../../controllers/users";
 
 

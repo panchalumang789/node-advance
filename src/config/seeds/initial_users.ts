@@ -8,18 +8,18 @@ export async function seed(knex: Knex): Promise<void> {
     await knex("users").insert([
         {
             id: "1",
-            first_name: "Umang",
-            last_name: "Panchal"
+            name: "Umang Panchal",
+            email: "umang@gmail.com",
         },
         {
             id: "2",
-            first_name: "Umang 1",
-            last_name: "Panchal"
+            name: "Umang 1 Panchal",
+            email: "umang1@gmail.com"
         },
         {
             id: "3",
-            first_name: "Umang 2",
-            last_name: "Panchal"
+            name: "Umang 2 Panchal",
+            email: "umang2@gmail.com"
         }
     ]);
 };

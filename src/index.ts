@@ -12,6 +12,9 @@ const start = async (port: number) => {
         options: {
           translateTime: 'HH:MM:ss Z',
           ignore: 'pid,hostname',
+          colorizeObjects: true,
+          singleLine: true,
+          customColors: 'err:red,info:blue',
         },
       },
     },
@@ -23,7 +26,7 @@ const start = async (port: number) => {
   }
   emitter.on('serverStarted', serverStarted)
 
-  app.listen({ port: 3000 }, (err, address) => {
+  app.listen({ port }, (err, address) => {
     if (err) {
       emitter.emit('serverStarted', err.message)
       process.exit(1);

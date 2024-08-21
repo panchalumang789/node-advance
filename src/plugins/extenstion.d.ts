@@ -1,8 +1,13 @@
 import 'fastify';
-import { GetAllUserData } from '../utils/user';
+import { GetAllUserData } from '../schema/user';
 
 declare module 'fastify' {
-    export interface FastifyRequest {
-        validatedData?: GetAllUserData
+  export interface FastifyRequest {
+    validatedData?: GetAllUserData,
+    auth?: {
+      user?: {
+        email?: string
+      }
     }
+  }
 }

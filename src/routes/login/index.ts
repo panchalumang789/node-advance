@@ -6,12 +6,22 @@ import { UserController } from "../../controllers/users";
 import { createUserSchema, getAllUsersSchema } from "../../schema/user";
 
 
-const userRoutes: FastifyPluginAsync = async (app) => {
+const loginRoutes: FastifyPluginAsync = async (app) => {
     const userController = new UserController();
 
-    app.post("/user", {
+    app.post("/login", {
         schema: {
-            tags: ['User'],
+            tags: ['Login'],
+            body: createUserSchema,
+            response: { 200: z.object({ user: getAllUsersSchema }) },
+        },
+        preHandler: validateData,
+        handler: userController.createUser
+    })
+
+    app.post("/register", {
+        schema: {
+            tags: ['Login'],
             body: createUserSchema,
             response: { 200: z.object({ user: getAllUsersSchema }) },
         },
@@ -21,4 +31,4 @@ const userRoutes: FastifyPluginAsync = async (app) => {
 
 }
 
-export { userRoutes };
+export { loginRoutes };

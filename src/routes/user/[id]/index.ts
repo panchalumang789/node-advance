@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { FastifyPluginAsync } from "fastify";
 
-import { getAllUsersSchema } from "../../../utils/user";
 import { validateData } from "../../../middleware/users";
 import { UserController } from "../../../controllers/users";
+import { createUserSchema, getAllUsersSchema } from "../../../schema/user";
 
 
 const userRoutesById: FastifyPluginAsync = async (app) => {
@@ -23,10 +23,7 @@ const userRoutesById: FastifyPluginAsync = async (app) => {
         schema: {
             tags: ['User'],
             params: z.object({ id: z.string() }),
-            body: z.object({
-                first_name: z.string().min(1, "First name is required"),
-                last_name: z.string().min(1, "Last name is required"),
-            }),
+            body: createUserSchema,
             response: { 200: z.object({ user: getAllUsersSchema }) },
         },
         preHandler: validateData,

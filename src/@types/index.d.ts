@@ -1,4 +1,4 @@
-import { USER } from '../modals/user';
+import { USER } from '../models/user';
 
 declare module 'knex/types/tables' {
     interface Tables {

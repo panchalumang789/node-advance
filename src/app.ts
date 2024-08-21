@@ -7,7 +7,8 @@ import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod
 
 import * as routes from './routes';
 import { APP_PREFIX, ENVIRONMENT, SWAGGER_URL } from "./config";
-import { swaggerPlugin } from "./plugins/swagger";
+import { swaggerOnReady, swaggerPlugin } from "./plugins/swagger";
+import { authPlugin } from "./plugins/auth";
 
 export const createApp = async (opts: FastifyServerOptions = { logger: false }) => {
     const app = fastify(opts);
@@ -17,6 +18,8 @@ export const createApp = async (opts: FastifyServerOptions = { logger: false }) 
 
     await app.register(fastifyFormbody);
     await app.register(fastifySensible, { logLevel: ['dev', 'test'].includes(ENVIRONMENT) ? 'debug' : 'warn' });
+
+    authPlugin(app, {})
 
     await swaggerPlugin(app, { routePrefix: SWAGGER_URL });
 
@@ -35,7 +38,7 @@ export const createApp = async (opts: FastifyServerOptions = { logger: false }) 
 
     await app.ready();
 
-    app.swagger();
+    swaggerOnReady(app);
 
     return app;
 }
