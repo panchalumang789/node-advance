@@ -1,7 +1,7 @@
-import type { Knex } from "knex";
+import type { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
-    await knex.raw(`
+  await knex.raw(`
         CREATE OR REPLACE FUNCTION update_timestamp()
         RETURNS TRIGGER
         LANGUAGE plpgsql
@@ -14,17 +14,17 @@ export async function up(knex: Knex): Promise<void> {
         $$;
     `);
 
-    await knex.schema.createTable("users", (table) => {
-        table.uuid("id").primary().defaultTo(knex.fn.uuid());
-        table.string("name").notNullable();
-        table.string("email").notNullable();
-        table.string("password").notNullable();
-        table.string("role");
+  await knex.schema.createTable('users', (table) => {
+    table.uuid('id').primary().defaultTo(knex.fn.uuid());
+    table.string('name').notNullable();
+    table.string('email').notNullable().unique();
+    table.string('password').notNullable();
+    table.string('role');
 
-        table.timestamps(true, true)
-    });
+    table.timestamps(true, true);
+  });
 
-    await knex.raw(`
+  await knex.raw(`
         CREATE TRIGGER update_timestamp_users
         BEFORE UPDATE
         ON users
@@ -34,5 +34,5 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-    return knex.schema.dropTable("users");
+  return knex.schema.dropTable('users');
 }

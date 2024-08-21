@@ -1,51 +1,26 @@
-import { FastifyPluginAsync } from "fastify";
-import { SWAGGER_URL } from "../../config";
-import fastifyJwt from "@fastify/jwt";
+import jwt from 'jsonwebtoken';
+import { FastifyRequest } from 'fastify';
 
+export const EMAIL_KEY = 'email';
 
-export const authPlugin: FastifyPluginAsync = async (app) => {
-  // app.addHook('onRequest', (request, _, next) => {
-  //   if (request.originalUrl === SWAGGER_URL) {
-  //     next()
-  //   }
+export const auth = (request: FastifyRequest) => {
+  const authHeader = request.headers.authorization;
+  if (!authHeader) {
+    throw request.server.httpErrors.unauthorized();
+  }
+  const [authType, token] = authHeader.split(' ');
+  if (authType !== 'Bearer') {
+    throw new Error('Invalid auth type');
+  }
 
-  //   const token = request.headers.authorization
-  //   // if (!token) {
-  //   //   throw app.httpErrors.unauthorized();
-  //   // }
-  //   request.auth = {
-  //     user: { email: token }
-  //   }
-  // })
+  const decoded = jwt.decode(token);
+  if (!decoded || typeof decoded !== 'object') {
+    throw request.server.httpErrors.unauthorized('Invalid token');
+  }
 
-  // await app.register(fastifyJwt, {
-  //   secret: 'node_advance_secret_key',  // Replace with your secret key
-  // });
-  // app.addHook('onRequest', (request, reply, next) => {
-  // const securitySchema = request.context.config?.schema?.security;
-  // console.log('index_21-securitySchema==>', request)
-  // if (securitySchema) {
-  //   try {
-  //     const token = request.headers.authorization;
-
-  //     // Check if the token is present
-  //     if (!token) {
-  //       reply.status(401).send({ error: 'Missing token' });
-  //       return;
-  //     }
-
-  //     // Validate the token (implement your logic here)
-  //     // const user = verifyToken(token);
-  //     // if (!user) {
-  //     //   reply.status(401).send({ error: 'Unauthorized' });
-  //     //   return;
-  //     // }
-
-  //     // Attach the user to the request object
-  //     // request.user = user;
-  //   } catch (error) {
-  //     reply.status(401).send({ error: 'Unauthorized' });
-  //   }
-  // }
-  // })
-}
+  request.auth = {
+    user: {
+      email: decoded?.[EMAIL_KEY],
+    },
+  };
+};

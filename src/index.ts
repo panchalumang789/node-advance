@@ -1,8 +1,8 @@
-import EventEmitter from "events";
+import EventEmitter from 'events';
 
-import { createApp } from "./app";
+import { createApp } from './app';
 
-const emitter = new EventEmitter()
+const emitter = new EventEmitter();
 
 const start = async (port: number) => {
   const app = await createApp({
@@ -21,19 +21,19 @@ const start = async (port: number) => {
   });
 
   const serverStarted = (message: string, type: string) => {
-    if (type === 'log') app.log.info(message)
-    else app.log.error(message)
-  }
-  emitter.on('serverStarted', serverStarted)
+    if (type === 'log') app.log.info(message);
+    else app.log.error(message);
+  };
+  emitter.on('serverStarted', serverStarted);
 
   app.listen({ port }, (err, address) => {
     if (err) {
-      emitter.emit('serverStarted', err.message)
+      emitter.emit('serverStarted', err.message);
       process.exit(1);
     } else {
-      emitter.emit('serverStarted', 'server listening on ' + address, 'log')
+      emitter.emit('serverStarted', 'server listening on ' + address, 'log');
     }
   });
 };
 
-start(3000)
+start(3000);

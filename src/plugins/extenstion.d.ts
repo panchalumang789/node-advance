@@ -3,11 +3,11 @@ import { GetAllUserData } from '../schema/user';
 
 declare module 'fastify' {
   export interface FastifyRequest {
-    validatedData?: GetAllUserData,
+    validatedData?: GetAllUserData;
     auth?: {
       user?: {
-        email?: string
-      }
-    }
+        email?: string;
+      };
+    };
   }
 }

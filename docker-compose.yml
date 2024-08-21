@@ -1,11 +1,11 @@
-version: "3.8"
+version: '3.8'
 
 services:
   node_advance:
     image: node_advance
     container_name: node_advance
     ports:
-      - "3000:3000"
+      - '3000:3000'
     env_file:
       - .env
     build:
@@ -20,7 +20,7 @@ services:
     image: postgres
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - '5432:5432'
     env_file:
       - .env
     volumes:
