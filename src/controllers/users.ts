@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import bcrypt from 'bcrypt';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
 import db from '../config/db';
@@ -42,7 +43,12 @@ export class UserController {
   createUser = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       if (request.validatedData) {
-        const [user] = await db('users').insert(request.validatedData).returning('*');
+        const hashedPassword = await bcrypt.hash(request.validatedData.password, 10);
+
+        const [user] = await db('users')
+          .insert({ ...request.validatedData, password: hashedPassword })
+          .returning('*');
+
         if (!user) {
           throw request.server.httpErrors.badRequest('User creation failed');
         }
@@ -60,8 +66,14 @@ export class UserController {
   updateUser = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       if (request.validatedData) {
+        const hashedPassword = await bcrypt.hash(request.validatedData.password, 10);
+
         const { id } = request.params as FastifyRequest<{ Params: { id: string } }>;
-        const [user] = await db('users').update(request.validatedData).where({ id }).returning('*');
+
+        const [user] = await db('users')
+          .update({ ...request.validatedData, password: hashedPassword })
+          .where({ id })
+          .returning('*');
         if (!user) {
           throw request.server.httpErrors.badRequest('User update failed');
         }

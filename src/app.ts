@@ -1,10 +1,13 @@
 import { z } from 'zod';
+import { config } from 'dotenv';
+import fastifyJwt from '@fastify/jwt';
 import fastifyEtag from '@fastify/etag';
 import fastifyFormbody from '@fastify/formbody';
 import fastifySensible from '@fastify/sensible';
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
 import fastify, { FastifyInstance, FastifyServerOptions, RegisterOptions } from 'fastify';
 
+config();
 import * as routes from './routes';
 import { APP_PREFIX, ENVIRONMENT, SWAGGER_URL } from './config';
 import { swaggerOnReady, swaggerPlugin } from './plugins/swagger';
@@ -16,6 +19,7 @@ export const createApp = async (opts: FastifyServerOptions = { logger: false }) 
   app.setSerializerCompiler(serializerCompiler);
 
   await app.register(fastifyFormbody);
+  await app.register(fastifyJwt, { secret: process.env.JWT_SECRET as string });
   await app.register(fastifySensible, {
     logLevel: ['dev', 'test'].includes(ENVIRONMENT) ? 'debug' : 'warn',
   });

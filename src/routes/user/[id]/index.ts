@@ -1,9 +1,10 @@
 import { z } from 'zod';
 import { FastifyPluginAsync } from 'fastify';
 
+import { auth } from '../../../plugins/auth';
+import { validateData } from '../../../middleware/users';
 import { UserController } from '../../../controllers/users';
 import { createUserSchema, getAllUsersSchema } from '../../../schema/user';
-import { auth } from '../../../plugins/auth';
 
 const userRoutesById: FastifyPluginAsync = async (app) => {
   const userController = new UserController();
@@ -15,7 +16,7 @@ const userRoutesById: FastifyPluginAsync = async (app) => {
       params: z.object({ id: z.string() }),
       response: { 200: z.object({ user: getAllUsersSchema }) },
     },
-    preHandler: auth,
+    preHandler: [validateData, auth],
     handler: userController.getUserById,
   });
 
@@ -27,7 +28,7 @@ const userRoutesById: FastifyPluginAsync = async (app) => {
       body: createUserSchema,
       response: { 200: z.object({ user: getAllUsersSchema }) },
     },
-    preHandler: auth,
+    preHandler: [validateData, auth],
     handler: userController.updateUser,
   });
 
@@ -38,7 +39,7 @@ const userRoutesById: FastifyPluginAsync = async (app) => {
       params: z.object({ id: z.string() }),
       response: { 200: z.object({ message: z.string() }) },
     },
-    preHandler: auth,
+    preHandler: [validateData, auth],
     handler: userController.deleteUser,
   });
 };

@@ -2,30 +2,30 @@ import { z } from 'zod';
 import { FastifyPluginAsync } from 'fastify';
 
 import { validateData } from '../../middleware/users';
-import { UserController } from '../../controllers/users';
-import { createUserSchema, getAllUsersSchema } from '../../schema/user';
+import { getAllUsersSchema } from '../../schema/user';
+import { LoginController } from '../../controllers/login';
+import { loginSchema, registerSchema } from '../../schema/login';
 
 const loginRoutes: FastifyPluginAsync = async (app) => {
-  const userController = new UserController();
+  const loginController = new LoginController();
 
   app.post('/login', {
     schema: {
       tags: ['Login'],
-      body: createUserSchema,
-      response: { 200: z.object({ user: getAllUsersSchema }) },
+      body: loginSchema,
+      response: { 200: z.object({ token: z.string() }) },
     },
-    preHandler: validateData,
-    handler: userController.createUser,
+    handler: loginController.login,
   });
 
   app.post('/register', {
     schema: {
       tags: ['Login'],
-      body: createUserSchema,
+      body: registerSchema,
       response: { 200: z.object({ user: getAllUsersSchema }) },
     },
     preHandler: validateData,
-    handler: userController.createUser,
+    handler: loginController.register,
   });
 };
 
