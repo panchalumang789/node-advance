@@ -2,8 +2,8 @@ import { z } from 'zod';
 import fastifyEtag from '@fastify/etag';
 import fastifyFormbody from '@fastify/formbody';
 import fastifySensible from '@fastify/sensible';
-import fastify, { FastifyInstance, FastifyServerOptions, RegisterOptions } from 'fastify';
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
+import fastify, { FastifyInstance, FastifyServerOptions, RegisterOptions } from 'fastify';
 
 import * as routes from './routes';
 import { APP_PREFIX, ENVIRONMENT, SWAGGER_URL } from './config';

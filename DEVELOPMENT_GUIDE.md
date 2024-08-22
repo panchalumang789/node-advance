@@ -47,3 +47,6 @@ npm run lint:tsx
 ```bash
 npm run lint:check
 ```
+
+CSRF Token
+Redis for avoiding spamming

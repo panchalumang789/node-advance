@@ -127,8 +127,7 @@
 
   - Implement secure handling of sensitive data, including encryption and data masking techniques
 
-- [`Security testing and vulnerability scanning`]()
-  Perform security testing and vulnerability scanning on a Node.js application to identify and address security vulnerabilities
+- [`Security testing and vulnerability scanning`]() Perform security testing and vulnerability scanning on a Node.js application to identify and address security vulnerabilities
 
 - [`Compliance with data protection regulations (e.g., GDPR, HIPAA)`]()
 
