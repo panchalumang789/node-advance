@@ -7,7 +7,7 @@ import { createUserSchema } from '../schema/user';
 
 const validateData = (
   request: FastifyRequest,
-  reply: FastifyReply,
+  _: FastifyReply,
   next: (err?: FastifyError) => void
 ) => {
   if (!request.body) next({ code: '404', name: 'Error', message: 'User details required' });

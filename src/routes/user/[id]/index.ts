@@ -13,10 +13,10 @@ const userRoutesById: FastifyPluginAsync = async (app) => {
     schema: {
       tags: ['User'],
       security: [{ bearerAuth: [] }],
-      params: z.object({ id: z.string() }),
+      params: z.object({ id: z.string().uuid('Invalid user id') }),
       response: { 200: z.object({ user: getAllUsersSchema }) },
     },
-    preHandler: [validateData, auth],
+    preHandler: [auth],
     handler: userController.getUserById,
   });
 
@@ -24,7 +24,7 @@ const userRoutesById: FastifyPluginAsync = async (app) => {
     schema: {
       tags: ['User'],
       security: [{ bearerAuth: [] }],
-      params: z.object({ id: z.string() }),
+      params: z.object({ id: z.string().uuid('Invalid user id') }),
       body: createUserSchema,
       response: { 200: z.object({ user: getAllUsersSchema }) },
     },
@@ -36,10 +36,10 @@ const userRoutesById: FastifyPluginAsync = async (app) => {
     schema: {
       tags: ['User'],
       security: [{ bearerAuth: [] }],
-      params: z.object({ id: z.string() }),
+      params: z.object({ id: z.string().uuid('Invalid user id') }),
       response: { 200: z.object({ message: z.string() }) },
     },
-    preHandler: [validateData, auth],
+    preHandler: [auth],
     handler: userController.deleteUser,
   });
 };

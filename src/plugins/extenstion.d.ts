@@ -5,8 +5,10 @@ declare module 'fastify' {
   export interface FastifyRequest {
     validatedData?: GetAllUserData;
     auth?: {
-      user?: {
-        email?: string;
+      user: {
+        id: string;
+        email: string;
+        role: string;
       };
     };
   }

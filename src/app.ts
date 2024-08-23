@@ -35,7 +35,9 @@ export const createApp = async (opts: FastifyServerOptions = { logger: false }) 
       const zodError = error.issues.map((err) => ({ [err.path[0]]: err.message }));
       reply.code(400).send({ message: zodError });
     } else {
-      reply.code(+code || 500).send({ message });
+      if (error.name === 'TokenExpiredError')
+        reply.code(+code || 500).send({ message: 'Token expired' });
+      else reply.code(+code || 500).send({ message });
     }
   });
 

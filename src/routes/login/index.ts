@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { FastifyPluginAsync } from 'fastify';
 
 import { validateData } from '../../middleware/users';
-import { getAllUsersSchema } from '../../schema/user';
+import { createUserSchema, getAllUsersSchema } from '../../schema/user';
 import { LoginController } from '../../controllers/login';
 import { loginSchema, registerSchema } from '../../schema/login';
 
@@ -21,7 +21,7 @@ const loginRoutes: FastifyPluginAsync = async (app) => {
   app.post('/register', {
     schema: {
       tags: ['Login'],
-      body: registerSchema,
+      body: createUserSchema,
       response: { 200: z.object({ user: getAllUsersSchema }) },
     },
     preHandler: validateData,
