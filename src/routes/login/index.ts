@@ -4,7 +4,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { validateData } from '../../middleware/users';
 import { createUserSchema, getAllUsersSchema } from '../../schema/user';
 import { LoginController } from '../../controllers/login';
-import { loginSchema, registerSchema } from '../../schema/login';
+import { loginSchema } from '../../schema/login';
 
 const loginRoutes: FastifyPluginAsync = async (app) => {
   const loginController = new LoginController();
