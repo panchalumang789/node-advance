@@ -1,9 +1,18 @@
 import 'fastify';
-import { GetAllUserData } from '../schema/user';
+import { getAllUserData } from '../schema/user';
+import { getAllProductData } from '../schema/products';
+import { RedisClientType } from 'redis';
 
 declare module 'fastify' {
+  export interface FastifyInstance {
+    redisServer: RedisClientType;
+    token?: string;
+  }
   export interface FastifyRequest {
-    validatedData?: GetAllUserData;
+    validatedUserData?: getAllUserData;
+    validatedProductData?: getAllProductData;
+    validatedOrderData?: getAllProductData;
+    validatedPaymentData?: getAllProductData;
     auth?: {
       user: {
         id: string;

@@ -18,8 +18,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('orders', (table) => {
     table.uuid('id').primary().defaultTo(knex.fn.uuid());
     table.enum('paymentStatus', Object.values(PaymentStatus));
-    table.string('payments').notNullable();
-    table.string('userId').notNullable();
+    table.uuid('user_id').references('id').inTable('users');
 
     table.timestamps(true, true);
   });

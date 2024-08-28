@@ -20,6 +20,8 @@ export async function up(knex: Knex): Promise<void> {
     table.integer('amount').notNullable();
     table.enum('paymentType', Object.values(PaymentType));
 
+    table.uuid('order_id').references('id').inTable('orders');
+
     table.timestamps(true, true);
   });
 

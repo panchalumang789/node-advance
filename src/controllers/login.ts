@@ -26,7 +26,10 @@ export class LoginController {
         },
         { expiresIn: 3600 }
       );
+      await request.server.redisServer.set(user.id, token);
       reply.header('Authorization', `Bearer ${token}`);
+
+      request.server.token = 'Umang Panchal';
 
       return reply.code(200).send({ token });
     } catch (error) {
@@ -39,23 +42,35 @@ export class LoginController {
 
   register = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      if (request.validatedData) {
-        const hashedPassword = await bcrypt.hash(request.validatedData.password, 10);
+      if (!request.validatedUserData) {
+        return reply.code(500).send({ message: 'User data not found' });
+      }
+      const hashedPassword = await bcrypt.hash(request.validatedUserData.password, 10);
 
-        const [user] = await db('users')
-          .insert({ ...request.validatedData, password: hashedPassword })
-          .returning('*');
+      const [user] = await db('users')
+        .insert({ ...request.validatedUserData, password: hashedPassword })
+        .returning('*');
 
-        if (!user) {
-          throw request.server.httpErrors.badRequest('User creation failed');
-        }
-        return reply.code(200).send({ user });
-      } else return reply.code(500).send({ message: 'User data not found' });
+      if (!user) {
+        throw request.server.httpErrors.badRequest('User creation failed');
+      }
+      return reply.code(200).send({ user });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return reply.code(400).send({ message: error.issues[0].message });
       } else if (error instanceof Error) {
-        return reply.code(500).send({ message: error.message });
+        if (
+          'code' in error &&
+          'constraint' in error &&
+          'detail' in error &&
+          error.code === '23505'
+        ) {
+          return reply
+            .code(409)
+            .send({ message: [{ [error.constraint as string]: error.detail }] });
+        } else {
+          return reply.code(500).send({ message: error.message });
+        }
       }
     }
   };

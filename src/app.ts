@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { config } from 'dotenv';
+import { createClient, RedisClientType } from 'redis';
 import fastifyJwt from '@fastify/jwt';
 import fastifyEtag from '@fastify/etag';
 import fastifyFormbody from '@fastify/formbody';
@@ -44,6 +45,11 @@ export const createApp = async (opts: FastifyServerOptions = { logger: false }) 
   await app.ready();
 
   swaggerOnReady(app);
+
+  const client = await createClient()
+    .on('error', (err) => console.log('Redis Client Error', err))
+    .connect();
+  app.redisServer = client as RedisClientType;
 
   return app;
 };

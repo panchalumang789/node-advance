@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { FastifyPluginAsync } from 'fastify';
 
-import { validateData } from '../../middleware/users';
-import { createUserSchema, getAllUsersSchema } from '../../schema/user';
-import { LoginController } from '../../controllers/login';
 import { loginSchema } from '../../schema/login';
+import { LoginController } from '../../controllers/login';
+import { validateUserData } from '../../middleware/users';
+import { createUserSchema, getAllUsersSchema } from '../../schema/user';
 
 const loginRoutes: FastifyPluginAsync = async (app) => {
   const loginController = new LoginController();
@@ -24,7 +24,7 @@ const loginRoutes: FastifyPluginAsync = async (app) => {
       body: createUserSchema,
       response: { 200: z.object({ user: getAllUsersSchema }) },
     },
-    preHandler: validateData,
+    preHandler: validateUserData,
     handler: loginController.register,
   });
 };
