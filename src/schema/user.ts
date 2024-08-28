@@ -4,6 +4,8 @@ export interface USER {
   id: string;
   name: string;
   email: string;
+  address: string;
+  contact_no: string;
   password: string;
   role: USER_ROLES;
   created_at: Date;
@@ -20,6 +22,8 @@ export const getAllUsersSchema = z.object({
   id: z.string(),
   name: z.string(),
   email: z.string(),
+  address: z.string(),
+  contact_no: z.string(),
   password: z.string(),
   role: z.string(),
   created_at: z.coerce.date(),
@@ -27,10 +31,17 @@ export const getAllUsersSchema = z.object({
 });
 
 export const createUserSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().min(1, 'Email is required').email(),
-  password: z.string().min(1, 'Password is required'),
+  name: z.string().min(1, 'Name is required').default(''),
+  email: z.string().min(1, 'Email is required').email().default(''),
+  address: z.string().min(1, 'Address is required').default(''),
+  contact_no: z
+    .string()
+    .min(1, 'Contact No is required')
+    .min(10, 'Invalid Contact No')
+    .max(10, 'Invalid Contact No')
+    .default(''),
+  password: z.string().min(1, 'Password is required').default(''),
   role: z.nativeEnum(USER_ROLES).default(USER_ROLES.Student),
 });
 
-export type GetAllUserData = z.infer<typeof createUserSchema>;
+export type getAllUserData = z.infer<typeof createUserSchema>;

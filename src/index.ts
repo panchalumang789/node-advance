@@ -26,7 +26,7 @@ const start = async (port: number) => {
   };
   emitter.on('serverStarted', serverStarted);
 
-  app.listen({ port }, (err, address) => {
+  app.listen({ port /*host: '0.0.0.0'*/ }, (err, address) => {
     if (err) {
       emitter.emit('serverStarted', err.message);
       process.exit(1);

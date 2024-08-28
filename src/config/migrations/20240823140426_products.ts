@@ -1,7 +1,5 @@
 import type { Knex } from 'knex';
 
-import { USER_ROLES } from '../../schema/user';
-
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     CREATE OR REPLACE FUNCTION update_timestamp()
@@ -16,14 +14,11 @@ export async function up(knex: Knex): Promise<void> {
     $$;
   `);
 
-  await knex.schema.createTable('users', (table) => {
+  await knex.schema.createTable('products', (table) => {
     table.uuid('id').primary().defaultTo(knex.fn.uuid());
     table.string('name').notNullable();
-    table.string('email').notNullable().unique();
-    table.string('address').notNullable();
-    table.string('contact_no').notNullable().unique();
-    table.string('password').notNullable();
-    table.enum('role', Object.values(USER_ROLES));
+    table.string('imagePath').notNullable().unique();
+    table.integer('price').notNullable();
 
     table.timestamps(true, true);
   });
@@ -31,12 +26,12 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     CREATE TRIGGER update_timestamp_users
     BEFORE UPDATE
-    ON users
+    ON products
     FOR EACH ROW
     EXECUTE PROCEDURE update_timestamp();
   `);
 }
 
 export async function down(knex: Knex): Promise<void> {
-  return knex.schema.dropTable('users');
+  return knex.schema.dropTable('products');
 }

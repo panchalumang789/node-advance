@@ -3,9 +3,9 @@
 import { z } from 'zod';
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 
-import { createUserSchema } from '../schema/user';
+import { createProductSchema } from '../schema/products';
 
-const validateUserData = (
+const validateProductData = (
   request: FastifyRequest,
   _: FastifyReply,
   next: (err?: FastifyError) => void
@@ -13,8 +13,8 @@ const validateUserData = (
   if (!request.body) next({ code: '404', name: 'Error', message: 'User details required' });
 
   try {
-    const data = createUserSchema.parse(request.body);
-    request.validatedUserData = data;
+    const data = createProductSchema.parse(request.body);
+    request.validatedProductData = data;
     next();
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -25,4 +25,4 @@ const validateUserData = (
   }
 };
 
-export { validateUserData };
+export { validateProductData };

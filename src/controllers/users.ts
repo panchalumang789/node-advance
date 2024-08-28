@@ -49,37 +49,38 @@ export class UserController {
 
   updateUser = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      if (request.validatedData) {
-        const hashedPassword = await bcrypt.hash(request.validatedData.password, 10);
+      if (!request.validatedUserData) {
+        return reply.code(500).send({ message: 'User data not found' });
+      }
+      const hashedPassword = await bcrypt.hash(request.validatedUserData.password, 10);
 
-        const { id } = request.params as FastifyRequest<{ Params: { id: string } }>;
+      const { id } = request.params as FastifyRequest<{ Params: { id: string } }>;
 
-        const existingUser = await db('users').select('id', 'role').where({ id }).first();
-        if (!existingUser) {
-          throw request.server.httpErrors.badRequest('User not found');
-        }
-        if (
-          existingUser.role + '' !== request.validatedData.role + '' &&
-          request.auth?.user.role !== USER_ROLES.Admin.toString()
-        ) {
-          throw request.server.httpErrors.badRequest('Cannot change the role');
-        }
-        if (
-          existingUser.id !== request.auth?.user.id &&
-          request.auth?.user.role !== USER_ROLES.Admin.toString()
-        ) {
-          throw request.server.httpErrors.badRequest('Unauthorized access');
-        }
+      const existingUser = await db('users').select('id', 'role').where({ id }).first();
+      if (!existingUser) {
+        throw request.server.httpErrors.badRequest('User not found');
+      }
+      if (
+        existingUser.role + '' !== request.validatedUserData.role + '' &&
+        request.auth?.user.role !== USER_ROLES.Admin.toString()
+      ) {
+        throw request.server.httpErrors.badRequest('Cannot change the role');
+      }
+      if (
+        existingUser.id !== request.auth?.user.id &&
+        request.auth?.user.role !== USER_ROLES.Admin.toString()
+      ) {
+        throw request.server.httpErrors.badRequest('Unauthorized access');
+      }
 
-        const [user] = await db('users')
-          .update({ ...request.validatedData, password: hashedPassword })
-          .where({ id })
-          .returning('*');
-        if (!user) {
-          throw request.server.httpErrors.badRequest('User update failed');
-        }
-        return reply.code(200).send({ user });
-      } else return reply.code(500).send({ message: 'User data not found' });
+      const [user] = await db('users')
+        .update({ ...request.validatedUserData, password: hashedPassword })
+        .where({ id })
+        .returning('*');
+      if (!user) {
+        throw request.server.httpErrors.badRequest('User update failed');
+      }
+      return reply.code(200).send({ user });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return reply.code(400).send({ message: error.issues[0].message });
@@ -105,8 +106,8 @@ export class UserController {
       }
 
       const user = await db('users').delete().where({ id });
-      if (user) return reply.code(200).send({ message: `${user} user deleted` });
-      else return reply.code(500).send({ message: 'User delete failed' });
+      if (!user) throw request.server.httpErrors.badRequest('User delete failed');
+      return reply.code(200).send({ message: `${user} user deleted` });
     } catch (error) {
       if (error instanceof Error) {
         return reply.code(500).send({ message: error.message });
