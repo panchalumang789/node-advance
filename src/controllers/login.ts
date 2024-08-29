@@ -29,7 +29,7 @@ export class LoginController {
       await request.server.redisServer.set(user.id, token);
       reply.header('Authorization', `Bearer ${token}`);
 
-      request.server.token = 'Umang Panchal';
+      await request.server.redisServer.set('token', `Bearer ${token}`);
 
       return reply.code(200).send({ token });
     } catch (error) {

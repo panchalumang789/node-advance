@@ -5,12 +5,9 @@ import { USER_ROLES } from '../../schema/user';
 
 export const EMAIL_KEY = 'email';
 
-const auth = async (
-  request: FastifyRequest,
-  _: FastifyReply,
-  next: (err?: FastifyError) => void
-) => {
-  const authHeader = request.headers.authorization;
+const auth = async (request: FastifyRequest, _: FastifyReply) => {
+  const authHeader =
+    request.headers.authorization || (await request.server.redisServer.get('token'));
   if (!authHeader) {
     throw request.server.httpErrors.unauthorized();
   }
@@ -34,14 +31,9 @@ const auth = async (
       role: decoded.role,
     },
   };
-  next();
 };
 
-const specificAdminAuth = async (
-  request: FastifyRequest,
-  _: FastifyReply,
-  next: (err?: FastifyError) => void
-) => {
+const specificAdminAuth = async (request: FastifyRequest, _: FastifyReply) => {
   const authHeader = request.headers.authorization;
   if (!authHeader) {
     throw request.server.httpErrors.unauthorized();
@@ -69,7 +61,6 @@ const specificAdminAuth = async (
       role: decoded.role,
     },
   };
-  next();
 };
 
 export { auth, specificAdminAuth };

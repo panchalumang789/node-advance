@@ -6,7 +6,6 @@ import { RedisClientType } from 'redis';
 declare module 'fastify' {
   export interface FastifyInstance {
     redisServer: RedisClientType;
-    token?: string;
   }
   export interface FastifyRequest {
     validatedUserData?: getAllUserData;
