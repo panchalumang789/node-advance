@@ -1,15 +1,16 @@
 import { z } from 'zod';
 import { config } from 'dotenv';
-import { createClient, RedisClientType } from 'redis';
 import fastifyJwt from '@fastify/jwt';
 import fastifyEtag from '@fastify/etag';
 import fastifyFormbody from '@fastify/formbody';
 import fastifySensible from '@fastify/sensible';
+import { createClient, RedisClientType } from 'redis';
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
 import fastify, { FastifyInstance, FastifyServerOptions, RegisterOptions } from 'fastify';
 
 config();
 import * as routes from './routes';
+import { rateLimitPlugin } from './plugins/rate-limit';
 import { APP_PREFIX, ENVIRONMENT, SWAGGER_URL } from './config';
 import { swaggerOnReady, swaggerPlugin } from './plugins/swagger';
 
@@ -26,6 +27,7 @@ export const createApp = async (opts: FastifyServerOptions = { logger: false }) 
   });
 
   await swaggerPlugin(app, { routePrefix: SWAGGER_URL });
+  await rateLimitPlugin(app, { max: 5 });
 
   registerRoutes(app, { prefix: APP_PREFIX });
 
@@ -36,9 +38,11 @@ export const createApp = async (opts: FastifyServerOptions = { logger: false }) 
       const zodError = error.issues.map((err) => ({ [err.path[0]]: err.message }));
       reply.code(400).send({ message: zodError });
     } else {
-      if (error.name === 'TokenExpiredError')
+      if (error.name === 'TokenExpiredError') {
         reply.code(+code || 500).send({ message: 'Token expired' });
-      else reply.code(+code || 500).send({ message });
+      } else if (error.statusCode === 429) {
+        reply.code(429).send({ message: 'You hit the rate limit! Slow down please!' });
+      } else reply.code(+code || 500).send({ message });
     }
   });
 
@@ -46,7 +50,7 @@ export const createApp = async (opts: FastifyServerOptions = { logger: false }) 
 
   swaggerOnReady(app);
 
-  const client = await createClient()
+  const client = await createClient({ url: 'redis://172.22.0.2:6379' })
     .on('error', (err) => console.log('Redis Client Error', err))
     .connect();
   app.redisServer = client as RedisClientType;

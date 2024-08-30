@@ -14,6 +14,7 @@ const productsRoutes: FastifyPluginAsync = async (app) => {
       tags: ['Product'],
       response: { 200: z.object({ products: z.array(getAllProductsSchema) }) },
     },
+    preHandler: app.rateLimit(),
     handler: productController.getAllProducts,
   });
 
@@ -23,6 +24,7 @@ const productsRoutes: FastifyPluginAsync = async (app) => {
       params: z.object({ id: z.string().uuid('Invalid product is') }),
       response: { 200: z.object({ product: getAllProductsSchema }) },
     },
+    preHandler: app.rateLimit(),
     handler: productController.getProductById,
   });
 
@@ -45,7 +47,7 @@ const productsRoutes: FastifyPluginAsync = async (app) => {
       body: createProductSchema,
       response: { 200: z.object({ product: getAllProductsSchema }) },
     },
-    preHandler: [specificAdminAuth, validateProductData],
+    preHandler: [app.rateLimit(), specificAdminAuth, validateProductData],
     handler: productController.updateProduct,
   });
 
@@ -56,7 +58,7 @@ const productsRoutes: FastifyPluginAsync = async (app) => {
       params: z.object({ id: z.string().uuid('Invalid product is') }),
       response: { 200: z.object({ message: z.string() }) },
     },
-    preHandler: [specificAdminAuth],
+    preHandler: [app.rateLimit(), specificAdminAuth],
     handler: productController.deleteProduct,
   });
 };

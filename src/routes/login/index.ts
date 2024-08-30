@@ -15,6 +15,7 @@ const loginRoutes: FastifyPluginAsync = async (app) => {
       body: loginSchema,
       response: { 200: z.object({ token: z.string() }) },
     },
+    preHandler: app.rateLimit(),
     handler: loginController.login,
   });
 
@@ -24,7 +25,7 @@ const loginRoutes: FastifyPluginAsync = async (app) => {
       body: createUserSchema,
       response: { 200: z.object({ user: getAllUsersSchema }) },
     },
-    preHandler: validateUserData,
+    preHandler: [app.rateLimit(), validateUserData],
     handler: loginController.register,
   });
 };

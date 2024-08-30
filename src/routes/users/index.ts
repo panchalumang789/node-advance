@@ -14,6 +14,7 @@ const usersRoutes: FastifyPluginAsync = async (app) => {
       tags: ['User'],
       response: { 200: z.object({ users: z.array(getAllUsersSchema) }) },
     },
+    preHandler: app.rateLimit(),
     handler: userController.getAllUsers,
   });
 
@@ -24,7 +25,7 @@ const usersRoutes: FastifyPluginAsync = async (app) => {
       params: z.object({ id: z.string().uuid('Invalid user id') }),
       response: { 200: z.object({ user: getAllUsersSchema }) },
     },
-    preHandler: [auth],
+    preHandler: [app.rateLimit(), auth],
     handler: userController.getUserById,
   });
 
@@ -36,7 +37,7 @@ const usersRoutes: FastifyPluginAsync = async (app) => {
       body: createUserSchema,
       response: { 200: z.object({ user: getAllUsersSchema }) },
     },
-    preHandler: [validateUserData, auth],
+    preHandler: [app.rateLimit(), validateUserData, auth],
     handler: userController.updateUser,
   });
 
@@ -47,7 +48,7 @@ const usersRoutes: FastifyPluginAsync = async (app) => {
       params: z.object({ id: z.string().uuid('Invalid user id') }),
       response: { 200: z.object({ message: z.string() }) },
     },
-    preHandler: [specificAdminAuth],
+    preHandler: [app.rateLimit(), specificAdminAuth],
     handler: userController.deleteUser,
   });
 };
