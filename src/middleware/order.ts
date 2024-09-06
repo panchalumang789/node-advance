@@ -3,18 +3,18 @@ import type {} from '../plugins/extenstion';
 import { z } from 'zod';
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 
-import { createProductSchema } from '../schema/products';
+import { createOrderSchema } from '../schema/orders';
 
-const validateProductData = (
+const validateOrderData = (
   request: FastifyRequest,
   _: FastifyReply,
   next: (err?: FastifyError) => void
 ) => {
-  if (!request.body) next({ code: '404', name: 'Error', message: 'Product details required' });
+  if (!request.body) next({ code: '404', name: 'Error', message: 'Order details required' });
 
   try {
-    const data = createProductSchema.parse(request.body);
-    request.validatedProductData = data;
+    const data = createOrderSchema.parse(request.body);
+    request.validatedOrderData = data;
     next();
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -25,4 +25,4 @@ const validateProductData = (
   }
 };
 
-export { validateProductData };
+export { validateOrderData };

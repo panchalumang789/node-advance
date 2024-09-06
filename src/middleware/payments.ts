@@ -3,18 +3,18 @@ import type {} from '../plugins/extenstion';
 import { z } from 'zod';
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 
-import { createProductSchema } from '../schema/products';
+import { createPaymentSchema } from '../schema/payments';
 
-const validateProductData = (
+const validatePaymentData = (
   request: FastifyRequest,
   _: FastifyReply,
   next: (err?: FastifyError) => void
 ) => {
-  if (!request.body) next({ code: '404', name: 'Error', message: 'Product details required' });
+  if (!request.body) next({ code: '404', name: 'Error', message: 'Payment details required' });
 
   try {
-    const data = createProductSchema.parse(request.body);
-    request.validatedProductData = data;
+    const data = createPaymentSchema.parse(request.body);
+    request.validatedPaymentData = data;
     next();
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -25,4 +25,4 @@ const validateProductData = (
   }
 };
 
-export { validateProductData };
+export { validatePaymentData };

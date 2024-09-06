@@ -50,7 +50,8 @@ export const createApp = async (opts: FastifyServerOptions = { logger: false }) 
 
   swaggerOnReady(app);
 
-  const client = await createClient({ url: 'redis://172.22.0.2:6379' })
+  // const client = await createClient({ url: 'redis://172.22.0.2:6379' })
+  const client = await createClient()
     .on('error', (err) => console.log('Redis Client Error', err))
     .connect();
   app.redisServer = client as RedisClientType;

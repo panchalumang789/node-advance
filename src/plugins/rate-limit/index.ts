@@ -7,7 +7,7 @@ export const rateLimitPlugin: FastifyPluginAsync<{ max: number }> = async (app, 
     max,
     timeWindow: 1000 * 60,
     cache: 10000,
-    // allowList: ['127.0.0.1'],
+    allowList: ['127.0.0.1'],
     redis: app.redisServer,
     skipOnError: false,
   });

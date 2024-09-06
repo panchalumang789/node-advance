@@ -3,52 +3,52 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 
 import db from '../config/db';
 
-export class ProductController {
-  getAllProducts = async (request: FastifyRequest, reply: FastifyReply) => {
+export class PaymentController {
+  getAllPayments = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const products = await db('products').select('*');
-      if (!products) {
-        throw request.server.httpErrors.badRequest('Products not found');
+      const payments = await db('payments').select('*');
+      if (!payments) {
+        throw request.server.httpErrors.badRequest('Payments not found');
       }
-      return reply.code(200).send({ products });
+      return reply.code(200).send({ payments });
     } catch (error) {
       if (error instanceof Error && error.name === 'NoSuchKey') {
-        throw request.server.httpErrors.notFound('Products not found');
+        throw request.server.httpErrors.notFound('Payments not found');
       }
       throw error;
     }
   };
 
-  getProductById = async (
+  getPaymentById = async (
     request: FastifyRequest<{ Params: { id: string } }>,
     reply: FastifyReply
   ) => {
     try {
       const { id } = request.params;
-      const product = await db('products').select('*').where({ id }).first();
-      if (!product) {
-        throw request.server.httpErrors.badRequest('Product not found');
+      const payment = await db('payments').select('*').where({ id }).first();
+      if (!payment) {
+        throw request.server.httpErrors.badRequest('Payment not found');
       }
-      return reply.code(200).send({ product });
+      return reply.code(200).send({ payment });
     } catch (error) {
       if (error instanceof Error) {
         return reply.code(500).send({ message: error.message });
       } else {
-        return reply.code(404).send({ message: 'Product not found' });
+        return reply.code(404).send({ message: 'Payment not found' });
       }
     }
   };
 
-  createProduct = async (request: FastifyRequest, reply: FastifyReply) => {
+  createPayment = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      if (!request.validatedProductData) {
-        throw request.server.httpErrors.badRequest('Product data not found');
+      if (!request.validatedPaymentData) {
+        throw request.server.httpErrors.badRequest('Payment data not found');
       }
-      const [product] = await db('products').insert(request.validatedProductData).returning('*');
-      if (!product) {
-        throw request.server.httpErrors.badRequest('Product creation failed');
+      const [payment] = await db('payments').insert(request.validatedPaymentData).returning('*');
+      if (!payment) {
+        throw request.server.httpErrors.badRequest('Payment creation failed');
       }
-      return reply.code(200).send({ product });
+      return reply.code(200).send({ payment });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return reply.code(400).send({ message: error.issues[0].message });
@@ -69,30 +69,30 @@ export class ProductController {
     }
   };
 
-  updateProduct = async (
+  updatePayment = async (
     request: FastifyRequest<{ Params: { id: string } }>,
     reply: FastifyReply
   ) => {
     try {
-      if (!request.validatedProductData) {
-        throw request.server.httpErrors.badRequest('Product data not found');
+      if (!request.validatedPaymentData) {
+        throw request.server.httpErrors.badRequest('Payment data not found');
       }
 
       const { id } = request.params;
-      const existingProduct = await db('products').select('id').where({ id }).first();
-      if (!existingProduct) {
-        throw request.server.httpErrors.badRequest('Product not found');
+      const existingPayment = await db('payments').select('id').where({ id }).first();
+      if (!existingPayment) {
+        throw request.server.httpErrors.badRequest('Payment not found');
       }
 
-      const [product] = await db('products')
-        .update(request.validatedProductData)
+      const [payment] = await db('payments')
+        .update(request.validatedPaymentData)
         .where({ id })
         .returning('*');
 
-      if (!product) {
-        throw request.server.httpErrors.badRequest('Product update failed');
+      if (!payment) {
+        throw request.server.httpErrors.badRequest('Payment update failed');
       }
-      return reply.code(200).send({ product });
+      return reply.code(200).send({ payment });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return reply.code(400).send({ message: error.issues[0].message });
@@ -113,15 +113,15 @@ export class ProductController {
     }
   };
 
-  deleteProduct = async (
+  deletePayment = async (
     request: FastifyRequest<{ Params: { id: string } }>,
     reply: FastifyReply
   ) => {
     try {
       const { id } = request.params as FastifyRequest<{ Params: { id: string } }>;
-      const product = await db('products').delete().where({ id });
-      if (!product) throw request.server.httpErrors.badRequest('Product not found');
-      return reply.code(200).send({ message: `${product} product deleted` });
+      const payment = await db('payments').delete().where({ id });
+      if (!payment) throw request.server.httpErrors.badRequest('Payment not found');
+      return reply.code(200).send({ message: `${payment} payment deleted` });
     } catch (error) {
       if (error instanceof Error) {
         return reply.code(500).send({ message: error.message });

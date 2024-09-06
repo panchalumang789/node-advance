@@ -1,7 +1,11 @@
 import 'fastify';
-import { getAllUserData } from '../schema/user';
-import { getAllProductData } from '../schema/products';
 import { RedisClientType } from 'redis';
+
+import { getAllUserData } from '../schema/user';
+import { getAllOrderData } from '../schema/orders';
+import { getAllProductData } from '../schema/products';
+import { getAllPaymentData } from '../schema/payments';
+import { getAllOrderItemData } from '../schema/orderItems';
 
 declare module 'fastify' {
   export interface FastifyInstance {
@@ -10,8 +14,9 @@ declare module 'fastify' {
   export interface FastifyRequest {
     validatedUserData?: getAllUserData;
     validatedProductData?: getAllProductData;
-    validatedOrderData?: getAllProductData;
-    validatedPaymentData?: getAllProductData;
+    validatedOrderData?: getAllOrderData;
+    validatedOrderItemData?: getAllOrderItemData;
+    validatedPaymentData?: getAllPaymentData;
     auth?: {
       user: {
         id: string;

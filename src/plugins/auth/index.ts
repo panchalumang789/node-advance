@@ -1,11 +1,11 @@
 import jwt from 'jsonwebtoken';
-import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyRequest } from 'fastify';
 
 import { USER_ROLES } from '../../schema/user';
 
 export const EMAIL_KEY = 'email';
 
-const auth = async (request: FastifyRequest, _: FastifyReply) => {
+const auth = async (request: FastifyRequest) => {
   const authHeader =
     request.headers.authorization || (await request.server.redisServer.get('token'));
   if (!authHeader) {
@@ -33,8 +33,9 @@ const auth = async (request: FastifyRequest, _: FastifyReply) => {
   };
 };
 
-const specificAdminAuth = async (request: FastifyRequest, _: FastifyReply) => {
-  const authHeader = request.headers.authorization;
+const specificAdminAuth = async (request: FastifyRequest) => {
+  const authHeader =
+    request.headers.authorization || (await request.server.redisServer.get('token'));
   if (!authHeader) {
     throw request.server.httpErrors.unauthorized();
   }
@@ -50,7 +51,7 @@ const specificAdminAuth = async (request: FastifyRequest, _: FastifyReply) => {
   if (token !== (await request.server.redisServer.get(decoded.id))) {
     throw request.server.httpErrors.unauthorized('Token is revoked');
   }
-  if (decoded.role !== USER_ROLES.Admin.toString()) {
+  if (decoded.role !== USER_ROLES.ADMIN.toString()) {
     throw request.server.httpErrors.unauthorized('Unauthorized access');
   }
 

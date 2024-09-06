@@ -1,7 +1,7 @@
 import { createWriteStream } from 'fs';
 import { FastifyPluginAsync } from 'fastify';
 
-import { readFileStream } from '../streams/readFile';
+import { readFileStream } from '../../streams/readFile';
 
 const streamRoutes: FastifyPluginAsync = async (fastify) => {
   const logStream = createWriteStream('requests.log', { flags: 'a' });
@@ -20,7 +20,6 @@ const streamRoutes: FastifyPluginAsync = async (fastify) => {
           reply.log.info(line);
         }
       });
-
       readFileStream().on('close', () => {
         reply.status(200).send({ hello: 'Read file stream closed' });
       });

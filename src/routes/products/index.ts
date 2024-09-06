@@ -21,7 +21,7 @@ const productsRoutes: FastifyPluginAsync = async (app) => {
   app.get('/product/:id', {
     schema: {
       tags: ['Product'],
-      params: z.object({ id: z.string().uuid('Invalid product is') }),
+      params: z.object({ id: z.string().uuid('Invalid product id') }),
       response: { 200: z.object({ product: getAllProductsSchema }) },
     },
     preHandler: app.rateLimit(),
@@ -43,7 +43,7 @@ const productsRoutes: FastifyPluginAsync = async (app) => {
     schema: {
       tags: ['Product'],
       security: [{ bearerAuth: [] }],
-      params: z.object({ id: z.string().uuid('Invalid product is') }),
+      params: z.object({ id: z.string().uuid('Invalid product id') }),
       body: createProductSchema,
       response: { 200: z.object({ product: getAllProductsSchema }) },
     },
@@ -55,7 +55,7 @@ const productsRoutes: FastifyPluginAsync = async (app) => {
     schema: {
       tags: ['Product'],
       security: [{ bearerAuth: [] }],
-      params: z.object({ id: z.string().uuid('Invalid product is') }),
+      params: z.object({ id: z.string().uuid('Invalid product id') }),
       response: { 200: z.object({ message: z.string() }) },
     },
     preHandler: [app.rateLimit(), specificAdminAuth],

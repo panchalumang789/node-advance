@@ -17,7 +17,9 @@
     "lint:tsc": "tsc --noEmit",
     "lint:eslint": "ESLINT_USE_FLAT_CONFIG=false eslint . --ext .ts",
     "lint:fix": "ESLINT_USE_FLAT_CONFIG=false eslint . --ext .ts --fix",
-    "lint": "yarn lint:tsc && yarn lint:eslint && yarn dep:check"
+    "lint": "yarn lint:tsc && yarn lint:eslint && yarn dep:check",
+    "dep:check": "ncu",
+    "depcheck": "npx depcheck"
   },
   "keywords": [],
   "author": "",
@@ -30,7 +32,12 @@
     "@types/node": "^22.1.0",
     "@typescript-eslint/parser": "^8.1.0",
     "eslint": "^9.9.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.30.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-promise": "^7.1.0",
     "globals": "^15.9.0",
+    "npm-check-updates": "^17.1.1",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.1.0"

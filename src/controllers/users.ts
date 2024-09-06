@@ -32,8 +32,8 @@ export class UserController {
         throw request.server.httpErrors.badRequest('User not found');
       }
       if (
-        user.role.toString() === USER_ROLES.Admin.toString() &&
-        request.auth?.user.role !== USER_ROLES.Admin.toString()
+        user.role.toString() === USER_ROLES.ADMIN.toString() &&
+        request.auth?.user.role !== USER_ROLES.ADMIN.toString()
       ) {
         throw request.server.httpErrors.badRequest('Unauthorized access');
       }
@@ -62,13 +62,13 @@ export class UserController {
       }
       if (
         existingUser.role + '' !== request.validatedUserData.role + '' &&
-        request.auth?.user.role !== USER_ROLES.Admin.toString()
+        request.auth?.user.role !== USER_ROLES.ADMIN.toString()
       ) {
         throw request.server.httpErrors.badRequest('Cannot change the role');
       }
       if (
         existingUser.id !== request.auth?.user.id &&
-        request.auth?.user.role !== USER_ROLES.Admin.toString()
+        request.auth?.user.role !== USER_ROLES.ADMIN.toString()
       ) {
         throw request.server.httpErrors.badRequest('Unauthorized access');
       }
@@ -100,7 +100,7 @@ export class UserController {
       }
       if (
         existingUser.id !== request.auth?.user.id &&
-        request.auth?.user.role !== USER_ROLES.Admin.toString()
+        request.auth?.user.role !== USER_ROLES.ADMIN.toString()
       ) {
         throw request.server.httpErrors.badRequest('Unauthorized access');
       }

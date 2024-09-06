@@ -11,11 +11,10 @@ export interface USER {
   created_at: Date;
   updated_at: Date;
 }
-
 export enum USER_ROLES {
-  Admin,
-  Instructor,
-  Student,
+  'ADMIN' = 'ADMIN',
+  'INSTRUCTOR' = 'INSTRUCTOR',
+  'STUDENT' = 'STUDENT',
 }
 
 export const getAllUsersSchema = z.object({
@@ -25,7 +24,7 @@ export const getAllUsersSchema = z.object({
   address: z.string(),
   contact_no: z.string(),
   password: z.string(),
-  role: z.string(),
+  role: z.nativeEnum(USER_ROLES),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
 });
@@ -41,7 +40,7 @@ export const createUserSchema = z.object({
     .max(10, 'Invalid Contact No')
     .default(''),
   password: z.string().min(1, 'Password is required').default(''),
-  role: z.nativeEnum(USER_ROLES).default(USER_ROLES.Student),
+  role: z.nativeEnum(USER_ROLES).default(USER_ROLES.STUDENT),
 });
 
 export type getAllUserData = z.infer<typeof createUserSchema>;
