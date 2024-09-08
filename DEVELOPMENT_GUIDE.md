@@ -48,5 +48,8 @@ npm run lint:tsx
 npm run lint:check
 ```
 
-CSRF Token
-Redis for avoiding spamming
+### Run App over Docker container
+
+- index.ts (add host on app listening)
+- knexfile.ts (change host to docker database container name)
+- app.ts (set url in redis createClient of running redis container IP) CSRF Token
