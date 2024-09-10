@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
 import db from '../config/db';
@@ -24,7 +25,7 @@ export class LoginController {
           email: user.email,
           role: user.role,
         },
-        { expiresIn: 3600 }
+        { jti: crypto.randomUUID(), expiresIn: 3600 }
       );
       await request.server.redisServer.set(user.id, token);
       reply.header('Authorization', `Bearer ${token}`);
@@ -73,5 +74,27 @@ export class LoginController {
         }
       }
     }
+  };
+
+  revoke = async (request: FastifyRequest, reply: FastifyReply) => {
+    const authHeader =
+      request.headers.authorization || (await request.server.redisServer.get('token'));
+    if (!authHeader) {
+      throw request.server.httpErrors.unauthorized();
+    }
+    const [authType, token] = authHeader.split(' ');
+    if (authType !== 'Bearer') {
+      throw new Error('Invalid auth type');
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    if (!decoded || typeof decoded !== 'object') {
+      throw request.server.httpErrors.unauthorized('Invalid token');
+    }
+    const jti = decoded.jti;
+
+    await request.server.redisServer.set(`revoked:${jti}`, 'true', { EX: 3600 }); // Expiration is optional
+
+    return reply.send({ message: 'Token revoked' });
   };
 }

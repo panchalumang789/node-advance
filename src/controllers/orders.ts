@@ -19,13 +19,99 @@ export class OrderController {
     }
   };
 
+  getAllOrdersData = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const orders = await db
+        .select('orders.*', {
+          user: db.raw('ROW_TO_JSON(users.*)'),
+          payments: db.raw('json_agg(DISTINCT payments.*)'),
+          orderItems: db.raw('json_agg(DISTINCT orderitems.*)'),
+          products: db.raw('json_agg(DISTINCT products.*)'),
+          // orderItems: db
+          //   .select('orderitems.*, products.*')
+          //   .from('orderitems')
+          //   .leftJoin('products', 'orderitems.product_id', 'products.id'),
+        })
+        .from('orders')
+        .leftJoin('users', 'orders.user_id', 'users.id')
+        .leftJoin('payments', 'orders.id', 'payments.order_id')
+        .leftJoin('orderitems', 'orders.id', 'orderitems.order_id')
+        .leftJoin('products', 'orderitems.product_id', 'products.id')
+        .groupBy('orders.id', 'users.id');
+
+      //     await db
+      //       .select('orders.*', {
+      //         user: db.raw('ROW_TO_JSON(users.*)'),
+      //         payments: db.raw('json_agg(DISTINCT payments.*)'),
+      //         orderItems: db.raw('json_agg(DISTINCT(orderitems.*,product))'),
+      //       })
+      //       .from('orders')
+      //       .leftJoin('users', 'orders.user_id', 'users.id')
+      //       .leftJoin('payments', 'orders.id', 'payments.order_id')
+      //       .leftJoin('orderitems', 'orders.id', 'orderitems.order_id')
+      //       .leftJoin(
+      //         db.raw(`(SELECT orderitems.product_id, products.*FROM orderitemsJOIN products ON orderitems.product_id = products.id) AS product
+      // `),
+      //         'orderitems.product_id',
+      //         'product.product_id'
+      //       )
+      //       .groupBy('orders.id', 'users.id');
+
+      if (!orders) {
+        throw request.server.httpErrors.badRequest('Orders not found');
+      }
+      return reply.code(200).send({ orders });
+    } catch (error) {
+      if (error instanceof Error && error.name === 'NoSuchKey') {
+        throw request.server.httpErrors.notFound('Orders not found');
+      }
+      throw error;
+    }
+  };
+
   getOrderById = async (
     request: FastifyRequest<{ Params: { id: string } }>,
     reply: FastifyReply
   ) => {
     try {
       const { id } = request.params;
+
       const order = await db('orders').select('*').where({ id }).first();
+
+      if (!order) {
+        throw request.server.httpErrors.badRequest('Order not found');
+      }
+      return reply.code(200).send({ order });
+    } catch (error) {
+      if (error instanceof Error) {
+        return reply.code(500).send({ message: error.message });
+      } else {
+        return reply.code(404).send({ message: 'Order not found' });
+      }
+    }
+  };
+
+  getOrderDataById = async (
+    request: FastifyRequest<{ Params: { id: string } }>,
+    reply: FastifyReply
+  ) => {
+    try {
+      const { id } = request.params;
+
+      const order = await db
+        .select('orders.*', {
+          user: db.raw('ROW_TO_JSON(users.*)'),
+          payments: db.raw('json_agg(DISTINCT payments.*)'),
+          orderItems: db.raw('json_agg(DISTINCT orderitems.*)'),
+        })
+        .from('orders')
+        .leftJoin('users', 'orders.user_id', 'users.id')
+        .leftJoin('payments', 'orders.id', 'payments.order_id')
+        .leftJoin('orderitems', 'orders.id', 'orderitems.order_id')
+        .where('orders.id', '=', id)
+        .groupBy('orders.id', 'users.id')
+        .first();
+
       if (!order) {
         throw request.server.httpErrors.badRequest('Order not found');
       }

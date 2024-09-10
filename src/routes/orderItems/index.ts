@@ -4,7 +4,11 @@ import { FastifyPluginAsync } from 'fastify';
 import { specificAdminAuth } from '../../plugins/auth';
 import { OrderItemController } from '../../controllers/orderItems';
 import { validateOrderItemsData } from '../../middleware/orderItems';
-import { createOrderItemSchema, getAllOrderItemsSchema } from '../../schema/orderItems';
+import {
+  createOrderItemSchema,
+  getAllOrderItemsSchema,
+  getOrderItemValuesSchema,
+} from '../../schema/orderItems';
 
 const orderItemsRoutes: FastifyPluginAsync = async (app) => {
   const orderItemController = new OrderItemController();
@@ -18,11 +22,30 @@ const orderItemsRoutes: FastifyPluginAsync = async (app) => {
     handler: orderItemController.getAllOrderItems,
   });
 
+  app.get('/orderItemsData', {
+    schema: {
+      tags: ['OrderItem'],
+      response: { 200: z.object({ orderItems: z.array(getOrderItemValuesSchema) }) },
+    },
+    preHandler: app.rateLimit(),
+    handler: orderItemController.getAllOrderItems,
+  });
+
   app.get('/orderItem/:id', {
     schema: {
       tags: ['OrderItem'],
       params: z.object({ id: z.string().uuid('Invalid orderItem id') }),
       response: { 200: z.object({ orderItem: getAllOrderItemsSchema }) },
+    },
+    preHandler: app.rateLimit(),
+    handler: orderItemController.getOrderItemById,
+  });
+
+  app.get('/orderItemData/:id', {
+    schema: {
+      tags: ['OrderItem'],
+      params: z.object({ id: z.string().uuid('Invalid orderItem id') }),
+      response: { 200: z.object({ orderItem: getOrderItemValuesSchema }) },
     },
     preHandler: app.rateLimit(),
     handler: orderItemController.getOrderItemById,

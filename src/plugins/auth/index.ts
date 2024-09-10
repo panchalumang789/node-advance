@@ -20,6 +20,11 @@ const auth = async (request: FastifyRequest) => {
   if (!decoded || typeof decoded !== 'object') {
     throw request.server.httpErrors.unauthorized('Invalid token');
   }
+  const jti = decoded.jti;
+  const isRevoked = await request.server.redisServer.exists(`revoked:${jti}`);
+  if (isRevoked) {
+    throw request.server.httpErrors.unauthorized('Token is revoked');
+  }
   if (token !== (await request.server.redisServer.get(decoded.id))) {
     throw request.server.httpErrors.unauthorized('Token is revoked');
   }
@@ -47,6 +52,11 @@ const specificAdminAuth = async (request: FastifyRequest) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
   if (!decoded || typeof decoded !== 'object') {
     throw request.server.httpErrors.unauthorized('Invalid token');
+  }
+  const jti = decoded.jti;
+  const isRevoked = await request.server.redisServer.exists(`revoked:${jti}`);
+  if (isRevoked) {
+    throw request.server.httpErrors.unauthorized('Token is revoked');
   }
   if (token !== (await request.server.redisServer.get(decoded.id))) {
     throw request.server.httpErrors.unauthorized('Token is revoked');

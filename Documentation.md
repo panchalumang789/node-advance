@@ -1,42 +1,42 @@
 ## Advanced Node.js Concepts
 
-#### Event-driven architecture and using EventEmitter
+#### Implement an event-driven architecture using Node.js's EventEmitter to handle asynchronous operations
 
 - Used in node server staring that server is started sucessfully or getting any error.
 
-#### Streams for handling large amounts of data
+#### Use streams to efficiently process and manipulate large amounts of data in Node.js
+
+- Create route readfile-stream to read and write a bulk amount of data
+
+#### Implement worker threads to perform parallel processing tasks in a Node.js application
+
+- Create multiple worker threads to perform the task synchronously and return the output as array (parellel-task)
+
+#### Design and develop a microservice architecture with Node.js services communicating through message queues
 
 -
 
-#### Worker threads for parallel processing
+#### Optimize the performance of a Node.js application by identifying and resolving bottlenecks
 
 -
 
-#### Microservice development and service-oriented architecture (SOA)
+#### Implement advanced security mechanisms such as OAuth or JWT-based authentication in a Node.js application
+
+- Created login api to generate JWT token which is required for private routes which required the role based authorization
+
+#### Build a distributed system using Node.js that communicates through message queues
 
 -
 
-#### Performance optimization techniques
+#### Containerize a Node.js application using Docker and deploy it to a cloud platform
+
+- Created a dockerize node app with container based service like(postgres for database, redis for caching)
+
+#### Able to write unit test cases
 
 -
 
-#### Security and authentication mechanisms
-
--
-
-#### Distributed systems and message queues
-
--
-
-#### Containerization and deployment using Docker
-
--
-
-#### Unit testing
-
--
-
-#### Integration testing
+#### Able to write the integration test cases
 
 -
 

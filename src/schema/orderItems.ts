@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getAllProductsSchema } from './products';
 
 export interface ORDERITEM {
   id: string;
@@ -20,6 +21,18 @@ export const getAllOrderItemsSchema = z.object({
   product_id: z.string().uuid('Invalid product id'),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
+});
+
+export const getOrderItemValuesSchema = z.object({
+  id: z.string(),
+  length: z.number(),
+  width: z.number(),
+  quantity: z.number(),
+  order_id: z.string().uuid('Invalid order id'),
+  product_id: z.string().uuid('Invalid product id'),
+  created_at: z.coerce.date(),
+  updated_at: z.coerce.date(),
+  products: getAllProductsSchema,
 });
 
 export const createOrderItemSchema = z.object({

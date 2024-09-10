@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { getAllUsersSchema } from './user';
+import { getAllPaymentsSchema } from './payments';
+import { getAllOrderItemsSchema } from './orderItems';
 
 export enum PaymentStatus {
   'PENDING' = 'PENDING',
@@ -18,6 +21,17 @@ export const getAllOrdersSchema = z.object({
   user_id: z.string().uuid('Invalid user id'),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
+});
+
+export const getOrderValueSchema = z.object({
+  id: z.string(),
+  paymentStatus: z.nativeEnum(PaymentStatus),
+  user_id: z.string().uuid('Invalid user id'),
+  created_at: z.coerce.date(),
+  updated_at: z.coerce.date(),
+  user: getAllUsersSchema,
+  payments: z.union([z.array(getAllPaymentsSchema), z.array(z.null())]),
+  orderItems: z.union([z.array(getAllOrderItemsSchema), z.array(z.null())]),
 });
 
 export const createOrderSchema = z.object({

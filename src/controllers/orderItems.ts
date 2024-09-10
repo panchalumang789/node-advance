@@ -6,7 +6,29 @@ import db from '../config/db';
 export class OrderItemController {
   getAllOrderItems = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const orderItems = await db('orderItems').select('*');
+      const orderItems = await db('orderitems').select('*');
+
+      if (!orderItems) {
+        throw request.server.httpErrors.badRequest('OrderItems not found');
+      }
+      return reply.code(200).send({ orderItems });
+    } catch (error) {
+      if (error instanceof Error && error.name === 'NoSuchKey') {
+        throw request.server.httpErrors.notFound('OrderItems not found');
+      }
+      throw error;
+    }
+  };
+
+  getAllOrderItemsWithData = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const orderItems = await db
+        .select('orderitems.*', {
+          products: db.raw('ROW_TO_JSON(products.*)'),
+        })
+        .from('orderitems')
+        .leftJoin('products', 'orderitems.product_id', 'products.id');
+
       if (!orderItems) {
         throw request.server.httpErrors.badRequest('OrderItems not found');
       }
@@ -25,7 +47,36 @@ export class OrderItemController {
   ) => {
     try {
       const { id } = request.params;
-      const orderItem = await db('orderItems').select('*').where({ id }).first();
+      const orderItem = await db('orderitems').select('*').where({ id }).first();
+
+      if (!orderItem) {
+        throw request.server.httpErrors.badRequest('OrderItem not found');
+      }
+      return reply.code(200).send({ orderItem });
+    } catch (error) {
+      if (error instanceof Error) {
+        return reply.code(500).send({ message: error.message });
+      } else {
+        return reply.code(404).send({ message: 'OrderItem not found' });
+      }
+    }
+  };
+
+  getOrderItemDataById = async (
+    request: FastifyRequest<{ Params: { id: string } }>,
+    reply: FastifyReply
+  ) => {
+    try {
+      const { id } = request.params;
+      const orderItem = await db
+        .select('orderitems.*', {
+          products: db.raw('ROW_TO_JSON(products.*)'),
+        })
+        .from('orderitems')
+        .leftJoin('products', 'orderitems.product_id', 'products.id')
+        .where('orderitems.id', '=', id)
+        .first();
+
       if (!orderItem) {
         throw request.server.httpErrors.badRequest('OrderItem not found');
       }
@@ -44,7 +95,7 @@ export class OrderItemController {
       if (!request.validatedOrderItemData) {
         throw request.server.httpErrors.badRequest('OrderItem data not found');
       }
-      const [orderItem] = await db('orderItems')
+      const [orderItem] = await db('orderitems')
         .insert(request.validatedOrderItemData)
         .returning('*');
       if (!orderItem) {
@@ -81,12 +132,12 @@ export class OrderItemController {
       }
 
       const { id } = request.params;
-      const existingOrderItem = await db('orderItems').select('id').where({ id }).first();
+      const existingOrderItem = await db('orderitems').select('id').where({ id }).first();
       if (!existingOrderItem) {
         throw request.server.httpErrors.badRequest('OrderItem not found');
       }
 
-      const [orderItem] = await db('orderItems')
+      const [orderItem] = await db('orderitems')
         .update(request.validatedOrderItemData)
         .where({ id })
         .returning('*');
@@ -121,7 +172,7 @@ export class OrderItemController {
   ) => {
     try {
       const { id } = request.params as FastifyRequest<{ Params: { id: string } }>;
-      const orderItem = await db('orderItems').delete().where({ id });
+      const orderItem = await db('orderitems').delete().where({ id });
       if (!orderItem) throw request.server.httpErrors.badRequest('OrderItem not found');
       return reply.code(200).send({ message: `${orderItem} orderItem deleted` });
     } catch (error) {

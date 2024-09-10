@@ -28,6 +28,16 @@ const loginRoutes: FastifyPluginAsync = async (app) => {
     preHandler: [app.rateLimit(), validateUserData],
     handler: loginController.register,
   });
+
+  app.post('/revoke', {
+    schema: {
+      tags: ['Login'],
+      body: createUserSchema,
+      response: { 200: z.object({ user: getAllUsersSchema }) },
+    },
+    preHandler: [app.rateLimit(), validateUserData],
+    handler: loginController.revoke,
+  });
 };
 
 export { loginRoutes };
