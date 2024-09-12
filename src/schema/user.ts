@@ -29,6 +29,31 @@ export const getAllUsersSchema = z.object({
   updated_at: z.coerce.date(),
 });
 
+export const getUsersDataSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string(),
+  address: z.string(),
+  contact_no: z.string(),
+  password: z.string(),
+  role: z.nativeEnum(USER_ROLES),
+  created_at: z.coerce.date(),
+  updated_at: z.coerce.date(),
+  _count: z.string(),
+  orders: z.array(
+    z.object({
+      orderItems: z.array(
+        z.object({
+          product: z.object({
+            price: z.number(),
+          }),
+          quantity: z.number(),
+        })
+      ),
+    })
+  ),
+});
+
 export const createUserSchema = z.object({
   name: z.string().min(1, 'Name is required').default(''),
   email: z.string().min(1, 'Email is required').email().default(''),

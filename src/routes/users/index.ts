@@ -4,7 +4,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { UserController } from '../../controllers/users';
 import { validateUserData } from '../../middleware/users';
 import { auth, specificAdminAuth } from '../../plugins/auth';
-import { createUserSchema, getAllUsersSchema } from '../../schema/user';
+import { createUserSchema, getAllUsersSchema, getUsersDataSchema } from '../../schema/user';
 
 const usersRoutes: FastifyPluginAsync = async (app) => {
   const userController = new UserController();
@@ -18,6 +18,15 @@ const usersRoutes: FastifyPluginAsync = async (app) => {
     handler: userController.getAllUsers,
   });
 
+  app.get('/usersData', {
+    schema: {
+      tags: ['User'],
+      response: { 200: z.object({ users: z.array(getUsersDataSchema) }) },
+    },
+    preHandler: app.rateLimit(),
+    handler: userController.getAllUsersData,
+  });
+
   app.get('/user/:id', {
     schema: {
       tags: ['User'],
@@ -27,6 +36,17 @@ const usersRoutes: FastifyPluginAsync = async (app) => {
     },
     preHandler: [app.rateLimit(), auth],
     handler: userController.getUserById,
+  });
+
+  app.get('/userData/:id', {
+    schema: {
+      tags: ['User'],
+      security: [{ bearerAuth: [] }],
+      params: z.object({ id: z.string().uuid('Invalid user id') }),
+      response: { 200: z.object({ user: getUsersDataSchema }) },
+    },
+    preHandler: [app.rateLimit(), auth],
+    handler: userController.getUserDataById,
   });
 
   app.put('/user/:id', {

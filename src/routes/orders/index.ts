@@ -21,8 +21,7 @@ const ordersRoutes: FastifyPluginAsync = async (app) => {
   app.get('/ordersData', {
     schema: {
       tags: ['Order'],
-      // response: { 200: z.object({ orders: z.array(getOrderValueSchema) }) },
-      response: { 200: z.any() },
+      response: { 200: z.object({ orders: z.array(getOrderValueSchema) }) },
     },
     preHandler: app.rateLimit(),
     handler: orderController.getAllOrdersData,

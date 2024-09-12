@@ -21,41 +21,28 @@ export class OrderController {
 
   getAllOrdersData = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const orders = await db
+      const ordersData = await db
         .select('orders.*', {
           user: db.raw('ROW_TO_JSON(users.*)'),
           payments: db.raw('json_agg(DISTINCT payments.*)'),
-          orderItems: db.raw('json_agg(DISTINCT orderitems.*)'),
-          products: db.raw('json_agg(DISTINCT products.*)'),
-          // orderItems: db
-          //   .select('orderitems.*, products.*')
-          //   .from('orderitems')
-          //   .leftJoin('products', 'orderitems.product_id', 'products.id'),
         })
         .from('orders')
         .leftJoin('users', 'orders.user_id', 'users.id')
         .leftJoin('payments', 'orders.id', 'payments.order_id')
-        .leftJoin('orderitems', 'orders.id', 'orderitems.order_id')
-        .leftJoin('products', 'orderitems.product_id', 'products.id')
         .groupBy('orders.id', 'users.id');
 
-      //     await db
-      //       .select('orders.*', {
-      //         user: db.raw('ROW_TO_JSON(users.*)'),
-      //         payments: db.raw('json_agg(DISTINCT payments.*)'),
-      //         orderItems: db.raw('json_agg(DISTINCT(orderitems.*,product))'),
-      //       })
-      //       .from('orders')
-      //       .leftJoin('users', 'orders.user_id', 'users.id')
-      //       .leftJoin('payments', 'orders.id', 'payments.order_id')
-      //       .leftJoin('orderitems', 'orders.id', 'orderitems.order_id')
-      //       .leftJoin(
-      //         db.raw(`(SELECT orderitems.product_id, products.*FROM orderitemsJOIN products ON orderitems.product_id = products.id) AS product
-      // `),
-      //         'orderitems.product_id',
-      //         'product.product_id'
-      //       )
-      //       .groupBy('orders.id', 'users.id');
+      const orders = await Promise.all(
+        ordersData.map(async (order) => {
+          let orderItems = await db
+            .select('orderitems.*', { product: db.raw('ROW_TO_JSON(products.*)') })
+            .from('orderitems')
+            .leftJoin('products', 'orderitems.product_id', 'products.id')
+            .where('orderitems.order_id', '=', order.id)
+            .groupBy('orderitems.id', 'products.id');
+
+          return { ...order, orderItems };
+        })
+      );
 
       if (!orders) {
         throw request.server.httpErrors.badRequest('Orders not found');
@@ -102,15 +89,23 @@ export class OrderController {
         .select('orders.*', {
           user: db.raw('ROW_TO_JSON(users.*)'),
           payments: db.raw('json_agg(DISTINCT payments.*)'),
-          orderItems: db.raw('json_agg(DISTINCT orderitems.*)'),
         })
         .from('orders')
         .leftJoin('users', 'orders.user_id', 'users.id')
         .leftJoin('payments', 'orders.id', 'payments.order_id')
-        .leftJoin('orderitems', 'orders.id', 'orderitems.order_id')
         .where('orders.id', '=', id)
         .groupBy('orders.id', 'users.id')
-        .first();
+        .first()
+        .then(async (data) => {
+          const result: any = { ...data };
+          const orderItems = await db
+            .select('orderitems.*', { product: db.raw('ROW_TO_JSON(products.*)') })
+            .from('orderitems')
+            .leftJoin('products', 'orderitems.product_id', 'products.id')
+            .groupBy('orderitems.id', 'products.id');
+          result['orderItems'] = orderItems;
+          return result;
+        });
 
       if (!order) {
         throw request.server.httpErrors.badRequest('Order not found');

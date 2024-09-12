@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { getAllUsersSchema } from './user';
 import { getAllPaymentsSchema } from './payments';
+import { getAllProductsSchema } from './products';
 import { getAllOrderItemsSchema } from './orderItems';
 
 export enum PaymentStatus {
@@ -31,7 +32,10 @@ export const getOrderValueSchema = z.object({
   updated_at: z.coerce.date(),
   user: getAllUsersSchema,
   payments: z.union([z.array(getAllPaymentsSchema), z.array(z.null())]),
-  orderItems: z.union([z.array(getAllOrderItemsSchema), z.array(z.null())]),
+  orderItems: z.union([
+    z.array(getAllOrderItemsSchema.extend({ product: getAllProductsSchema })),
+    z.array(z.null()),
+  ]),
 });
 
 export const createOrderSchema = z.object({
